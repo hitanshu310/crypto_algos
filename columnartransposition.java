@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.*;
-// columanr transposition cipher
+// columnar transposition cipher
 class Main {
   static String plain_text;
   static String cipher_text;
@@ -15,7 +15,7 @@ class Main {
     else
       return pText.length() / key.length();
   }
-  static String encode(ArrayList<Column> col)
+  static String encode(ArrayList<Column> col, String key)
   {
     Collections.sort(col, new CompareClass());
     String ctext = "";
@@ -25,6 +25,34 @@ class Main {
       ctext = ctext + c.getOutString();
     }
     return ctext;
+  }
+  static String decode(ArrayList<Column> cols, String key)
+  {
+    for(int i = 0; i < cols.size(); i++)
+    {
+      int ind = (int) key.charAt(i);
+      for(int j = 0; j < cols.size(); j++)
+      {
+        Column tempcol = cols.get(j);
+        if(tempcol.getInd() == ind)
+        {
+          Collections.swap(cols, i, j);
+        }
+      }
+    }
+    int counter = 0;
+    char[] ctext = new char[cipher_text.length()];
+    for(int i = 0; i < col_len; i++)
+    {
+      for(int j = 0; j < cols.size(); j++)
+      {
+        Column colm = cols.get(j);
+        if(counter < plain_text.length())
+          ctext[counter] = colm.colChar[i];
+        counter++;
+      }
+    }
+    return new String(ctext);
   }
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
@@ -36,7 +64,7 @@ class Main {
     {
       Column c = new Column();
       c.initColChar(col_len);
-      c.setInd((int) plain_text.charAt(i));
+      c.setInd((int) key.charAt(i));
       char[] tempArray = new char[col_len];
       for(int j = 0; j < tempArray.length; j++)
       {
@@ -48,14 +76,15 @@ class Main {
       c.setColChar(tempArray);
       cols.add(c);
     } 
-    cipher_text = encode(cols);
-    System.out.print(cipher_text);
+    cipher_text = encode(cols, key);
+    System.out.println(cipher_text);
+    System.out.println(decode(cols, key));
   }
 }
 class Column 
 {
   private int sortInd;
-  private char[] colChar;
+  public char[] colChar;
   public void initColChar(int index)
   {
     this.colChar = new char[index];
